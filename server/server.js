@@ -3,6 +3,8 @@ import cors from "cors";
 import axios from "axios";
 import dotenv from "dotenv";
 
+import templateRoutes from "./routes/templateRoutes.js";
+
 dotenv.config();
 
 const app = express();
@@ -35,6 +37,9 @@ app.post("/proxy/bee-auth", async (req, res) => {
     res.status(500).json({ error: "Failed to authenticate" });
   }
 });
+
+// Template Routes
+app.use("/api", templateRoutes);
 
 app.listen(PORT, () => {
   console.log(`Proxy server running on http://localhost:${PORT}`);
