@@ -3,9 +3,12 @@ import BeefreeEditor from "./BeefreeEditor";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-function SavedTemplatesButton() {
+function SavedTemplatesButton(props) {
   return (
-    <button style={{ padding: "10px 20px", fontSize: "16px" }}>
+    <button
+      onClick={props.toggleShowSaves}
+      style={{ padding: "10px 20px", fontSize: "16px" }}
+    >
       Saved Templates
     </button>
   );
@@ -85,16 +88,27 @@ function DocsButton() {
 
 function App() {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  // toggle saved tamplates
+  const [showSaves, setShowSaves] = useState(false);
+
+  const toggleShowSaves = () => {
+    setShowSaves((prev) => !prev);
+  };
   return (
     <div className="App">
       <header className="App-header">
         <h1>Welcome to My Beefree Demo</h1>
         <div>
           <DocsButton />
-          <SavedTemplatesButton />
+          <SavedTemplatesButton
+            setShowSaves={setShowSaves}
+            toggleShowSaves={toggleShowSaves}
+          />
         </div>
+        {showSaves && (
+          <TemplateList setSelectedTemplate={setSelectedTemplate} />
+        )}
         <BeefreeEditor selectedTemplate={selectedTemplate} />
-        <TemplateList setSelectedTemplate={setSelectedTemplate} />
       </header>
     </div>
   );
