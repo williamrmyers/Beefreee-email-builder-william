@@ -3,7 +3,6 @@ import sql from "../db.client.js";
 
 const router = express.Router();
 
-// 1 Save a new template
 router.post("/templates", async (req, res) => {
   try {
     const { name, data } = req.body;
@@ -23,7 +22,6 @@ router.post("/templates", async (req, res) => {
   }
 });
 
-//  Get all template UUIDs + names
 router.get("/templates", async (req, res) => {
   try {
     const templates = await sql`
@@ -38,12 +36,12 @@ router.get("/templates", async (req, res) => {
   }
 });
 
-// Get a single template by ID
 router.get("/templates/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const template = await sql`
-      SELECT * FROM email_templates WHERE id = ${id};
+      SELECT * FROM email_templates 
+      WHERE id = ${id};
     `;
     if (template.length === 0)
       return res.status(404).json({ error: "Template not found" });
@@ -51,6 +49,30 @@ router.get("/templates/:id", async (req, res) => {
   } catch (err) {
     console.error("Error fetching template:", err);
     res.status(500).json({ error: "Failed to fetch template" });
+  }
+});
+
+router.delete("/templates/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await sql`
+      DELETE FROM email_templates
+      WHERE id = ${id}
+      RETURNING *;
+    `;
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Template not found" });
+    }
+
+    res.json({
+      message: "Template deleted",
+      deletedTemplate: result[0],
+    });
+  } catch (error) {
+    console.error("Error deleting template:", error);
+    res.status(500).json({ error: "Failed to delete template" });
   }
 });
 

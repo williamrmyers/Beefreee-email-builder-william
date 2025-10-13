@@ -2,6 +2,7 @@ import "./App.css";
 import BeefreeEditor from "./BeefreeEditor";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import dayjs from "dayjs";
 
 function SavedTemplatesButton(props) {
   return (
@@ -15,13 +16,22 @@ function SavedTemplatesButton(props) {
 }
 
 function TemplateList(props) {
-  // Stores list of tamplates on the server
   const [templates, setTemplates] = useState([]);
   const [error, setError] = useState("");
 
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3001/api/templates/${id}`
+      );
+      console.log("record deleted", response.data);
+      setTemplates((prev) => prev.filter((t) => t.id !== id));
+    } catch {
+      console.error("Error Deleting Template.");
+    }
+  };
+
   const handleClick = async (id) => {
-    console.log(id);
-    // make a request to access a single template in Json format
     try {
       const config = {
         method: "get",
@@ -29,20 +39,18 @@ function TemplateList(props) {
       };
 
       const response = await axios(config);
-      // console.log(JSON.stringify(response.data, null, 2));
+
       props.setSelectedTemplate(JSON.stringify(response.data, null, 2));
     } catch (error) {
       console.error("Error fetching template:", error.message);
     }
-    // Convert to JSON if necessary
-    // Pass to setSelectedTemplate
   };
 
   useEffect(() => {
     async function fetchTemplates() {
       try {
         const response = await axios.get("http://localhost:3001/api/templates");
-        setTemplates(response.data); // expects an array of templates
+        setTemplates(response.data);
       } catch (err) {
         console.error("Error fetching templates:", err);
         setError("Failed to load templates");
@@ -62,8 +70,15 @@ function TemplateList(props) {
       ) : (
         <ul>
           {templates.map((template) => (
-            <li onClick={() => handleClick(template.id)} key={template.id}>
-              {template.name} — <em>{template.created_at}</em>
+            <li key={template.id}>
+              <span onClick={() => handleClick(template.id)}>
+                {" "}
+                Email Template saved at:{" "}
+                {dayjs(template.created_at).format("MMM D, YYYY h:mm")}{" "}
+              </span>
+              <a onClick={() => handleDelete(template.id)} href="#">
+                (Delete)
+              </a>
             </li>
           ))}
         </ul>

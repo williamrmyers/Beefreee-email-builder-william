@@ -4,7 +4,7 @@ import BeefreeSDK from "@beefree.io/sdk";
 
 export default function BeefreeEditor(props) {
   const containerRef = useRef(null);
-  const beeRef = useRef(null); // keep SDK instance between renders
+  const beeRef = useRef(null); // Init Ref for SDK
 
   useEffect(() => {
     async function initializeEditor() {
@@ -31,9 +31,8 @@ export default function BeefreeEditor(props) {
             language
           ) => {
             // inside onSave or onChange handler
-            console.log("Saving template...");
+            console.log("Saving template......");
 
-            // Construct the JSON blob you’ll store in Postgres
             const templateData = {
               name: pageJson?.name || "Untitled Template",
               data: {
@@ -92,10 +91,10 @@ export default function BeefreeEditor(props) {
     if (loadedTemplate) {
       console.log("Loading new template into BeeFree", loadedTemplate);
 
-      // Will load the new template JSON into BeeFree editor
+      // Will loads new template JSON into BeeFree editor
       beeRef.current.load(loadedTemplate);
     }
-  }, [props.selectedTemplate]); // Dependency array is going to whenever template changes
+  }, [props.selectedTemplate]); // Dependency array is going rerender whenever template changes
 
   return (
     <div

@@ -16,7 +16,6 @@ app.use(express.json());
 const BEE_CLIENT_ID = process.env.BEE_CLIENT_ID;
 const BEE_CLIENT_SECRET = process.env.BEE_CLIENT_SECRET;
 
-// V2 Auth Endpoint
 app.post("/proxy/bee-auth", async (req, res) => {
   try {
     const { uid } = req.body;
@@ -38,7 +37,6 @@ app.post("/proxy/bee-auth", async (req, res) => {
   }
 });
 
-// Template Routes
 app.use("/api", templateRoutes);
 
 app.listen(PORT, () => {
